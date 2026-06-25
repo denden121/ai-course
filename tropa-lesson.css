@@ -4029,58 +4029,29 @@ footer.site-footer { background:transparent; border:none; padding:0; margin:56px
 #lesson-content .callout.about-author { border-left:3px solid var(--accent) !important; background:var(--accent-soft) !important; }
 
 
-/* ===== Спойлер для ответов в блоке «Проверь себя» — «волшебная пыль» как в Telegram ===== */
-@property --qa-da {
-  syntax: '<number>';
-  inherits: false;
-  initial-value: 1;
-}
+/* ===== Спойлер для ответов в блоке «Проверь себя» — матовое размытие ===== */
 .qa-spoiler {
-  --qa-da: 1;
-  color: transparent;
+  filter: blur(6px);
+  color: inherit;
   cursor: pointer;
-  border-radius: 5px;
-  padding: 0 2px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  background-color: rgba(130, 130, 140, 0.12);
-  background-image:
-    radial-gradient(circle at center, rgba(150, 150, 165, var(--qa-da)) 0.6px, transparent 1.2px),
-    radial-gradient(circle at center, rgba(190, 190, 205, var(--qa-da)) 0.5px, transparent 1px),
-    radial-gradient(circle at center, rgba(120, 120, 135, var(--qa-da)) 0.6px, transparent 1.2px);
-  background-size: 6px 6px, 9px 9px, 13px 13px;
-  background-repeat: repeat;
-  animation: qa-drift 6s linear infinite, qa-twinkle 1.1s ease-in-out infinite alternate;
-  transition: color 0.4s ease 0.05s, background-color 0.5s ease;
+  border-radius: 6px;
+  padding: 0 3px;
+  background: rgba(127, 127, 127, 0.14);
+  box-shadow: inset 0 0 0 100px rgba(127, 127, 127, 0.06);
+  transition: filter 0.35s ease, background 0.25s ease;
   -webkit-user-select: none;
   user-select: none;
 }
-.qa-spoiler:not(.revealed) * {
-  color: transparent !important;
-  background: transparent !important;
-  text-shadow: none !important;
-}
-.qa-spoiler:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.qa-spoiler:hover { background: rgba(127, 127, 127, 0.22); }
+.qa-spoiler:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .qa-spoiler.revealed {
-  color: inherit;
+  filter: none;
   cursor: default;
-  background-color: transparent;
-  animation: qa-vanish 0.55s ease forwards;
+  background: transparent;
+  box-shadow: none;
   -webkit-user-select: auto;
   user-select: auto;
 }
-@keyframes qa-drift {
-  to { background-position: 18px 12px, -27px 27px, 26px -26px; }
-}
-@keyframes qa-twinkle {
-  from { --qa-da: 0.5; }
-  to   { --qa-da: 1; }
-}
-@keyframes qa-vanish {
-  from { --qa-da: 1; }
-  to   { --qa-da: 0; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .qa-spoiler { animation: none; --qa-da: 0.85; }
-  .qa-spoiler.revealed { animation: none; --qa-da: 0; }
+  .qa-spoiler { transition: none; }
 }
