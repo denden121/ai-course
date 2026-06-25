@@ -1505,6 +1505,27 @@ main {
   line-height: 1.75;
 }
 
+/* Спойлер для ответов в блоке «Проверь себя» */
+.qa-spoiler {
+  filter: blur(5px);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 2px;
+  background: rgba(127, 127, 127, 0.1);
+  transition: filter 0.25s ease, background 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.qa-spoiler:hover { background: rgba(127, 127, 127, 0.18); }
+.qa-spoiler:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.qa-spoiler.revealed {
+  filter: none;
+  cursor: default;
+  background: transparent;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
 .lesson-content h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -26992,6 +27013,7 @@ function renderLesson(id) {
   // Post-render enhancements
   enhanceCodeBlocks(container);
   initSandboxes(container);
+  initSelfCheckSpoilers(container);
   initAlesha(lesson);
 
   // Build TOC and inject after H1
@@ -27197,6 +27219,54 @@ function enhanceCodeBlocks(container) {
       });
     };
     pre.appendChild(btn);
+  });
+}
+
+// ============================================================
+// Спойлеры в блоке «Проверь себя»: ответы заблюрены, пока по
+// ним не кликнут. Состояние НЕ сохраняется — при перезагрузке
+// страницы (или переходе к другому уроку) ответы снова блюрятся.
+// ============================================================
+function initSelfCheckSpoilers(container) {
+  const scope = container || document;
+  scope.querySelectorAll('h2, h3').forEach(heading => {
+    if (!/Провер[ья]\s+себя/i.test(heading.textContent)) return;
+    let el = heading.nextElementSibling;
+    while (el && !/^H[1-3]$/.test(el.tagName)) {
+      if (el.tagName === 'P') wrapSelfCheckAnswer(el);
+      el = el.nextElementSibling;
+    }
+  });
+}
+
+function wrapSelfCheckAnswer(p) {
+  if (p.querySelector('.qa-spoiler')) return;        // уже обёрнут
+  const br = p.querySelector('br');
+  if (!br) return;                                   // нет разделителя «вопрос/ответ»
+  const span = document.createElement('span');
+  span.className = 'qa-spoiler';
+  span.setAttribute('role', 'button');
+  span.setAttribute('tabindex', '0');
+  span.setAttribute('aria-label', 'Показать ответ');
+  span.title = 'Нажми, чтобы показать ответ';
+  let node = br.nextSibling;
+  while (node) {
+    const next = node.nextSibling;
+    span.appendChild(node);
+    node = next;
+  }
+  if (!span.childNodes.length) return;               // после <br> ничего нет
+  p.appendChild(span);
+  const reveal = () => {
+    span.classList.add('revealed');
+    span.removeAttribute('tabindex');
+    span.removeAttribute('role');
+    span.removeAttribute('title');
+    span.removeAttribute('aria-label');
+  };
+  span.addEventListener('click', reveal);
+  span.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); }
   });
 }
 

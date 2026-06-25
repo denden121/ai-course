@@ -4028,3 +4028,24 @@ footer.site-footer { background:transparent; border:none; padding:0; margin:56px
 /* §M автор-callout: зелёная левая полоса (бьёт .callout{border-left:none!important}) */
 #lesson-content .callout.about-author { border-left:3px solid var(--accent) !important; background:var(--accent-soft) !important; }
 
+
+/* ===== Спойлер для ответов в блоке «Проверь себя» ===== */
+.qa-spoiler {
+  filter: blur(5px);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 2px;
+  background: rgba(127, 127, 127, 0.1);
+  transition: filter 0.25s ease, background 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.qa-spoiler:hover { background: rgba(127, 127, 127, 0.18); }
+.qa-spoiler:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.qa-spoiler.revealed {
+  filter: none;
+  cursor: default;
+  background: transparent;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
